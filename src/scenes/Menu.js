@@ -63,6 +63,8 @@ class Menu extends Phaser.Scene {
                 spaceshipSpeed: 3,
                 gameTimer: 60000
             }
+
+            // SFX
             this.sound.play('sfx-select')
             this.scene.start('playScene')
         }
@@ -72,6 +74,8 @@ class Menu extends Phaser.Scene {
                 spaceshipSpeed: 4,
                 gameTimer: 45000
             }
+
+            // SFX
             this.sound.play('sfx-select')
             this.scene.start('playScene')
         }
