@@ -33,7 +33,7 @@ class Play extends Phaser.Scene {
         this.p1Score = 0
 
         // display score
-        let scoreConfig = {
+        let textConfig = {
             fontFamily: 'Courier',
             fontSize: '28px',
             backgroundColor: '#F3B141',
@@ -46,21 +46,30 @@ class Play extends Phaser.Scene {
             fixedWidth: 100
         }
 
-        this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, this.p1Score, scoreConfig)
+        this.timerEvent = this.time.addEvent({
+			delay: game.settings.gameTimer
+		})
+
+        this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, this.p1Score, textConfig)
+        this.timeLeft = this.add.text(game.config.width - borderUISize - borderPadding - 100, borderUISize + borderPadding*2, game.settings.gameTimer, textConfig)
 
         // GAME OVER flag
         this.gameOver = false
 
-        // 60-second play clock
-        scoreConfig.fixedWidth = 0
+        // 45/60-second play clock
+        textConfig.fixedWidth = 0
         this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
-            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5)
-            this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← for Menu', scoreConfig).setOrigin(0.5)
+            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', textConfig).setOrigin(0.5)
+            this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← for Menu', textConfig).setOrigin(0.5)
             this.gameOver = true
         }, null, this)
     }
 
     update() {
+        // Update timer
+        const seconds = (game.settings.gameTimer - this.timerEvent.getElapsed())/1000
+        this.timeLeft.text = seconds.toFixed(1)
+        
         // check key input for restart
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyRESET)) {
             this.scene.restart()
