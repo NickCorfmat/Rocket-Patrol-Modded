@@ -5,7 +5,7 @@ class Play extends Phaser.Scene {
 
     create() {
         // place tile sprite
-        this.starfield = this.add.tileSprite(0, 0, 640, 480, 'starfield').setOrigin(0, 0)
+        this.planet = this.add.tileSprite(0, 0, 640, 480, 'planet').setOrigin(0, 0)
 
         // green UI background
         this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0x00FF00).setOrigin(0,0)
@@ -22,6 +22,9 @@ class Play extends Phaser.Scene {
         this.ship01 = new Spaceship(this, game.config.width + borderUISize*6, borderUISize*4, 'spaceship', 0, 30).setOrigin(0, 0)
         this.ship02 = new Spaceship(this, game.config.width + borderUISize*3, borderUISize*5 + borderPadding*2, 'spaceship', 0, 20).setOrigin(0,0)
         this.ship03 = new Spaceship(this, game.config.width, borderUISize*6 + borderPadding*4, 'spaceship', 0, 10).setOrigin(0,0)
+
+        // Add starfighter
+        this.ship04 = new StarFighter(this, game.config.width + borderUISize*3, borderUISize*5 + borderPadding*2, 'starfighter', 0, 50).setOrigin(0,0)
 
         // define keys
         keyFIRE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)
@@ -46,9 +49,27 @@ class Play extends Phaser.Scene {
             fixedWidth: 100
         }
 
+        // initialize timer
         this.timerEvent = this.time.addEvent({
 			delay: game.settings.gameTimer
 		})
+
+        // particle configurations
+
+        // var particles = this.add.particles('flares')
+
+        // var emitter = particles.createEmitter({
+        //     frame: [ 'red', 'blue', 'green', 'yellow'],
+        //     x: 200,
+        //     y: 150,
+        //     speed: 200,
+        //     lifespan: 500,
+        //     blendMode: 'ADD',
+        //     frequency: 50,
+        //     maxParticles: 10,
+        //     alpha: { start: 1, end: 1},
+        //     scale: { start: 1, end: 0}
+        // });
 
         this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, this.p1Score, textConfig)
         this.timeLeft = this.add.text(game.config.width - borderUISize - borderPadding - 100, borderUISize + borderPadding*2, game.settings.gameTimer, textConfig)
@@ -79,16 +100,21 @@ class Play extends Phaser.Scene {
             this.scene.start("menuScene")
         }
 
-        this.starfield.tilePositionX -= 4
+        this.planet.tilePositionX -= 4
 
         if (!this.gameOver) {
             this.p1Rocket.update()          // update rocket sprite
             this.ship01.update()            // update spaceships (x3)
             this.ship02.update()
             this.ship03.update()
+            this.ship04.update()
         }
 
         // check collisions
+        if (this.checkCollision(this.p1Rocket, this.ship04)) {
+            this.p1Rocket.reset()
+            this.shipExplode(this.ship04)
+        }
         if (this.checkCollision(this.p1Rocket, this.ship03)) {
             this.p1Rocket.reset()
             this.shipExplode(this.ship03)
@@ -101,7 +127,6 @@ class Play extends Phaser.Scene {
             this.p1Rocket.reset()
             this.shipExplode(this.ship01)
         }
-
     }
 
     checkCollision(rocket, ship) {
