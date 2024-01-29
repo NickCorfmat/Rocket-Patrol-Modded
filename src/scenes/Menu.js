@@ -9,14 +9,7 @@ class Menu extends Phaser.Scene {
         this.load.image('spaceship', './assets/spaceship.png')
         this.load.image('starfighter', './assets/starfighter.png')
         this.load.image('planet', './assets/planetsurface.png')
-
-        // load spritesheet
-        this.load.spritesheet('explosion', './assets/explosion.png', {
-            frameWidth: 64,
-            frameHeight: 32,
-            startFrame: 0,
-            endFrame: 9
-        })
+        this.load.image('flares', './assets/particles.png')
 
         // load audio
         this.load.audio('sfx-select', './assets/sfx-select.wav')
@@ -25,13 +18,6 @@ class Menu extends Phaser.Scene {
     }
 
     create() {
-        // animation configuration
-        this.anims.create({
-            key: 'explode',
-            frames: this.anims.generateFrameNumbers('explosion', { start: 0, end: 9, first: 0}),
-            frameRate: 30
-        })
-        
         let menuConfig = {
             fontFamily: 'Courier',
             fontSize: '28px',
@@ -47,7 +33,7 @@ class Menu extends Phaser.Scene {
 
         // display menu text
         this.add.text(game.config.width/2, game.config.height/2 - borderUISize - borderPadding, 'ROCKET PATROL', menuConfig).setOrigin(0.5)
-        this.add.text(game.config.width/2, game.config.height/2, 'Use ←→ arrows to move & (F) to fire', menuConfig).setOrigin(0.5)
+        this.add.text(game.config.width/2, game.config.height/2, 'Use mouse to move & left click to fire', menuConfig).setOrigin(0.5)
         menuConfig.backgroundColor = '#00FF00'
         menuConfig.color = '#000'
         this.add.text(game.config.width/2, game.config.height/2 + borderUISize + borderPadding, 'Press ← for Novice or → for Expert', menuConfig).setOrigin(0.5)

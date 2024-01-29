@@ -1,12 +1,18 @@
 // Name: Nick Corfmat
-// Game: Rocket Patrol 2: Starfighter Assault
-// Project duration:
-
+// Mod Title: Rocket Patrol 2: Atmospheric Assault
+// Project duration: 5 hours
+//
 // Mods:
-// - New spaceship type (5 pts)
-// - Implement mouse movement + firing control (5 pts)
-// - Display remaining time (3 pts)
-// - Create new scrolling background (1 pt)
+// * New enemy Spaceship type (5 pts)
+// * Mouse movement + firing control (5 pts)
+// * Particle explosion (5 pts)
+// * Display remaining time (3 pts)
+// * Create new scrolling background (1 pt)
+// * Implement 'FIRE' UI text (1 pt)
+//
+// Citations:
+// * Mitchell Hudson, "23 Phaser 3 tutorial particle emitter stars", YouTube,
+//   URL: https://www.youtube.com/watch?v=JSrafZXuehQ
 
 let config = {
     type: Phaser.AUTO,
@@ -16,6 +22,14 @@ let config = {
 }
 
 let game = new Phaser.Game(config)
+
+let particleConfig = {
+    x: 0,
+    y: 0,
+    speed: 120,
+    lifespan: 300,
+    blendMode: 'ADD'
+}
 
 // reserve keyboard bindings
 let keyFIRE, keyRESET, keyLEFT, keyRIGHT

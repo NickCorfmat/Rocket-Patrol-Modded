@@ -8,7 +8,7 @@ class Play extends Phaser.Scene {
         this.planet = this.add.tileSprite(0, 0, 640, 480, 'planet').setOrigin(0, 0)
 
         // green UI background
-        this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0x00FF00).setOrigin(0,0)
+        this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0xAD632F).setOrigin(0,0)
         // white borders
         this.add.rectangle(0, 0, game.config.width, borderUISize, 0xFFFFFF).setOrigin(0, 0)
         this.add.rectangle(0, game.config.height - borderUISize, game.config.width, borderUISize, 0xFFFFFF).setOrigin(0, 0)
@@ -49,30 +49,29 @@ class Play extends Phaser.Scene {
             fixedWidth: 100
         }
 
+        // display FIRE
+        let fireTextConfig = {
+            fontFamily: 'Courier',
+            fontSize: '28px',
+            backgroundColor: '#F3B141',
+            color: '#843605',
+            align: 'center',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 100,
+        }
+
         // initialize timer
         this.timerEvent = this.time.addEvent({
 			delay: game.settings.gameTimer
 		})
 
-        // particle configurations
-
-        // var particles = this.add.particles('flares')
-
-        // var emitter = particles.createEmitter({
-        //     frame: [ 'red', 'blue', 'green', 'yellow'],
-        //     x: 200,
-        //     y: 150,
-        //     speed: 200,
-        //     lifespan: 500,
-        //     blendMode: 'ADD',
-        //     frequency: 50,
-        //     maxParticles: 10,
-        //     alpha: { start: 1, end: 1},
-        //     scale: { start: 1, end: 0}
-        // });
-
         this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, this.p1Score, textConfig)
         this.timeLeft = this.add.text(game.config.width - borderUISize - borderPadding - 100, borderUISize + borderPadding*2, game.settings.gameTimer, textConfig)
+        var fireText = this.fireText = this.add.text((game.config.width/2) - 50, borderUISize + borderPadding*2, 'FIRE', fireTextConfig)
+        fireText.setAlpha(0)
 
         // GAME OVER flag
         this.gameOver = false
@@ -98,6 +97,12 @@ class Play extends Phaser.Scene {
 
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
             this.scene.start("menuScene")
+        }
+
+        if (this.p1Rocket.isFiring) {
+            this.fireText.setAlpha(1)
+        } else {
+            this.fireText.setAlpha(0)
         }
 
         this.planet.tilePositionX -= 4
@@ -144,15 +149,18 @@ class Play extends Phaser.Scene {
     shipExplode(ship) {
         // temporarily hide ship
         ship.alpha = 0
-        // create explosion sprite at ship's position
-        let boom = this.add.sprite(ship.x, ship.y, 'explosion').setOrigin(0, 0);
-        boom.anims.play('explode')              // play explode animation
-        boom.on('animationcomplete', () => {    // callback after anim completes
-            ship.reset()                        // reset ship position
-            ship.alpha = 1                      // make ship visible again
-            boom.destroy()                      // rremove explosion sprite 
+        // create explosion particles at ship's position
+        this.add.particles(ship.x, ship.y, 'flares', {
+            speed: 120,
+            lifespan: 300,
+            blendMode: 'ADD',
+            scale: { start: 0.75, end: 0 },
+            duration: 200
+        });
 
-        })
+        ship.reset()        // reset spaceship's position
+        ship.alpha = 1      // unhide spaceship
+
         // score add and text update
         this.p1Score += ship.points
         this.scoreLeft.text = this.p1Score
